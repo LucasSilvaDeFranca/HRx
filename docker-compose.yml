@@ -14,5 +14,31 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.back
+    container_name: hrx-api
+    restart: unless-stopped
+    ports:
+      - '3333:3333'
+    environment:
+      DATABASE_URL: postgresql://hrx:hrx123@postgres:5432/hrx
+      JWT_SECRET: trocar-em-producao
+      NODE_ENV: production
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.front
+    container_name: hrx-web
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - api
+
 volumes:
   pgdata:
